@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -20,7 +20,7 @@ class Tournament(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     country = Column(String, nullable = False)
     city = Column(String, nullable=False)
-    date = Column(DateTime, nullable=False)
+    date = Column(Date, nullable=False)
     title = Column(String, nullable=False)
     min_elo = Column(Integer, nullable=False)
     max_elo = Column(Integer)
