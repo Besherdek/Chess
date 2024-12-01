@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
+import models, schemas
 from datetime import date
 
 def create_chess_player(db: Session, db_chess_player_data: schemas.Chess_Player_Create):

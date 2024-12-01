@@ -26,7 +26,7 @@ class Chess_Player_Update(BaseModel):
 
 
 class Tournament_Create(BaseModel):
-    counrty: str
+    country: str
     city: str
     start_date: date
     title: str
@@ -35,7 +35,7 @@ class Tournament_Create(BaseModel):
 
 class Tournament_Response(BaseModel):
     id: int
-    counrty: str
+    country: str
     city: str
     start_date: date
     title: str
@@ -46,7 +46,7 @@ class Tournament_Response(BaseModel):
         orm_mode = True
 
 class Tournament_Update(BaseModel):
-    counrty: Optional[str] = None
+    country: Optional[str] = None
     city: Optional[str] = None
     start_date: Optional[date] = None
     title: Optional[str] = None
