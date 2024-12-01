@@ -20,7 +20,7 @@ class Tournament(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     country = Column(String, nullable = False)
     city = Column(String, nullable=False)
-    date = Column(Date, nullable=False)
+    start_date = Column(Date, nullable=False)
     title = Column(String, nullable=False)
     min_elo = Column(Integer, nullable=False)
     max_elo = Column(Integer)

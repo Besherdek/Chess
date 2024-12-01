@@ -1,32 +1,39 @@
 from sqlalchemy.orm import Session
-from . import models
+from . import models, schemas
 from datetime import date
 
-def create_chess_player(db: Session, initials: str, country: str = None, elo: int, title: str = None):
-    db_chess_player = models.Chess_player(
-        initials = initials,
-        country = country,
-        elo = elo,
-        title = title
-    )
+# def create_chess_player(db: Session, initials: str, elo: int, country: str = None, title: str = None):
+#     db_chess_player = models.Chess_player(
+#         initials = initials,
+#         country = country,
+#         elo = elo,
+#         title = title
+#     )
+#     db.add(db_chess_player)
+#     db.commit()
+#     db.refresh(db_chess_player)
+#     return db_chess_player
+
+def create_chess_player(db: Session, db_chess_player_data: schemas.Chess_Player_Create):
+    db_chess_player = models.Chess_player(**db_chess_player_data.dict())
     db.add(db_chess_player)
     db.commit()
     db.refresh(db_chess_player)
     return db_chess_player
 
-def create_tournament(db: Session, country: str, city: str, date: date, title: str, min_elo: int, max_elo: int):
-    db_tournament = models.Tournament(
-        country = country,
-        city = city,
-        date = date,
-        title = title,
-        min_elo = min_elo,
-        max_elo = max_elo
-    )
+def create_tournament(db: Session, db_tournament_data: schemas.Tournament_Create):
+    db_tournament = models.Tournament(**db_tournament_data.dict())
     db.add(db_tournament)
     db.commit()
     db.refresh(db_tournament)
     return db_tournament
+
+def create_chess_player(db: Session, db_tournament_data: schemas.Chess_PLayer_Create):
+    db_tournament = models.Tournament(**db_chess_player_data.dict())
+    db.add(db_chess_player)
+    db.commit()
+    db.refresh(db_chess_player)
+    return db_chess_player
 
 def create_partitipation(db: Session, chess_player_id: int, tournament_id: int, partition_number: int, place: int):
     db_partitipation = models.Partitipation(
@@ -49,7 +56,7 @@ def read_tournaments(db: Session):
 def read_partitipations(db: Session):
     return db.query(models.Partitipation).all()
 
-def update_chess_player(db: Session, id: int, initials: str = ..., country: str = ..., elo: int, title: str = ...):
+def update_chess_player(db: Session, id: int, initials: str = ..., country: str = ..., elo: int = ..., title: str = ...):
     db_chess_player = db.query(models.Chess_player).filter(models.Chess_player.id == id).first()
 
     if not db_chess_player:
@@ -69,7 +76,7 @@ def update_chess_player(db: Session, id: int, initials: str = ..., country: str 
 
     return db_chess_player
 
-def update_tournament(db: Session, id: int, country: str = ..., city: str = ..., date: date = ..., title: str = ..., min_elo: int = ..., max_elo: int = ...):
+def update_tournament(db: Session, id: int, country: str = ..., city: str = ..., start_date: date = ..., title: str = ..., min_elo: int = ..., max_elo: int = ...):
     db_tournament = db.query(models.Tournament).filter(models.Tournament.id == id).first()
 
     if not db_tournament:
@@ -79,8 +86,8 @@ def update_tournament(db: Session, id: int, country: str = ..., city: str = ...,
         db_tournament.country = country
     if city is not ...:
         db_tournament.city = city
-    if date is not ...:
-        db_tournament.date = date
+    if start_date is not ...:
+        db_tournament.start_date = start_date
     if title is not ...:
         db_tournament.title = title
     if min_elo is not ...:
