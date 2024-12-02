@@ -1,0 +1,6 @@
+why doesn't my read work?
+do i need to always return table in case of success?
+what is session, engine?
+is it ok to create db by hand, or do i have to use alembic anyway?
+ui
+what is migration?
