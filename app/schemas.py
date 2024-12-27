@@ -9,10 +9,10 @@ class Chess_Player_Create(BaseModel):
     title: Optional[str] = None
 
 class Chess_Player_Response(BaseModel):
-    id: int
-    initials: str
+    id: Optional[int] = None
+    initials: Optional[str] = None
     country: Optional[str] = None
-    elo: int
+    elo: Optional[int] = None
     title: Optional[str] = None
 
     class Config:
@@ -75,3 +75,12 @@ class Partitipation_Update(BaseModel):
     tournament_id: Optional[int] = None
     partition_number: Optional[int] = None
     place: Optional[int] = None
+
+class Results_response(BaseModel):
+    initials: str
+    place: int
+    title: str
+
+class Winners_response(BaseModel):
+    initials: str
+    place: int
