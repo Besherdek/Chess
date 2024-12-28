@@ -44,6 +44,7 @@ class Tournament_Response(BaseModel):
 
     class Config:
         orm_mode = True
+        model_config = {'from_attributes': True}
 
 class Tournament_Update(BaseModel):
     country: Optional[str] = None
@@ -69,6 +70,7 @@ class Partitipation_Response(BaseModel):
 
     class Config:
         orm_mode = True
+        model_config = {'from_attributes': True}
 
 class Partitipation_Update(BaseModel):
     chess_player_id: Optional[int] = None

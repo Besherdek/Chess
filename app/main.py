@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from database import get_db
@@ -6,6 +7,9 @@ import crud, schemas
 
 app = FastAPI()
 
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
 
 # player--------------------------------------------------------------------
 
@@ -15,7 +19,7 @@ def create_chess_player(chess_player: schemas.Chess_Player_Create, db: Session =
 
 @app.get("/chess_players/", response_model=list[schemas.Chess_Player_Response])
 def read_chess_players(
-    select_columns: list = None,
+    select_columns: Optional[List[str]] = Query(None),
     min_elo: int = None,
     max_elo: int = None,
     country: str = None,

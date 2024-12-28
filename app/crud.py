@@ -19,7 +19,18 @@ def create_chess_player(db: Session, db_chess_player_data: schemas.Chess_Player_
     db.refresh(db_chess_player)
     return db_chess_player
 
-def read_chess_players(db: Session, select_columns: list = None, min_elo: int = None, max_elo: int = None, country: str = None, sort_by: str = None, asc: bool = True):
+def read_chess_players(db: Session, select_columns: list, min_elo: int, max_elo: int, country: str, sort_by: str, asc: bool):
+    corresponding_columns = {
+        "id": models.Chess_player.id,
+        "initials": models.Chess_player.initials,
+        "country": models.Chess_player.country,
+        "elo": models.Chess_player.elo,
+        "title": models.Chess_player.title
+    }
+
+    if select_columns:    
+        select_columns = [corresponding_columns[col] for col in select_columns]
+
     query = select(*select_columns) if select_columns else select(models.Chess_player)
 
     if min_elo:
@@ -33,14 +44,14 @@ def read_chess_players(db: Session, select_columns: list = None, min_elo: int = 
 
     if sort_by:
         try:
-            query = apply_sort(query, sort_by, asc, {
-                "initials": models.Chess_player.initials,
-                "country": models.Chess_player.country,
-                "elo": models.Chess_player.elo,
-                "title": models.Chess_player.title
-            })
+            query = apply_sort(query, sort_by, asc, corresponding_columns)
         except ValueError as e:
             raise ValueError(e)
+        
+    if select_columns:
+        results = db.execute(query).all()
+        keys = [col.name for col in select_columns]
+        return [schemas.Chess_Player_Response(**dict(zip(keys, row))) for row in results]
         
     return db.execute(query).scalars().all()
 
@@ -221,7 +232,7 @@ def read_partitipation_results(db: Session, sort_by: str = None, asc: bool = Tru
 def read_winners(db: Session, sort_by: str = None, asc: bool = True):
     query = select(
         models.Chess_player.initials,
-        models.Partitipation.place,
+        models.Partitipation.place
     ).join(
         models.Chess_player, models.Chess_player.id == models.Partitipation.chess_player_id
     ).group_by(
