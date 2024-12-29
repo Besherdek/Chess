@@ -31,7 +31,7 @@ class Tournament_Create(BaseModel):
     start_date: date
     title: str
     min_elo: int
-    max_elo: int
+    max_elo: Optional[int] = None
 
 class Tournament_Response(BaseModel):
     id: int
@@ -40,11 +40,10 @@ class Tournament_Response(BaseModel):
     start_date: date
     title: str
     min_elo: int
-    max_elo: int
+    max_elo: Optional[int] = None
 
     class Config:
         orm_mode = True
-        model_config = {'from_attributes': True}
 
 class Tournament_Update(BaseModel):
     country: Optional[str] = None
@@ -70,7 +69,6 @@ class Partitipation_Response(BaseModel):
 
     class Config:
         orm_mode = True
-        model_config = {'from_attributes': True}
 
 class Partitipation_Update(BaseModel):
     chess_player_id: Optional[int] = None
@@ -83,6 +81,12 @@ class Results_response(BaseModel):
     place: int
     title: str
 
+    class Config:
+        orm_mode = True
+
 class Winners_response(BaseModel):
     initials: str
     place: int
+
+    class Config:
+        orm_mode = True

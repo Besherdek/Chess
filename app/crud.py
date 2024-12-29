@@ -13,11 +13,13 @@ def apply_sort(query, sort_by: str, asc: bool, valid_columns: dict):
 # player--------------------------------------------------------------------
 
 def create_chess_player(db: Session, db_chess_player_data: schemas.Chess_Player_Create):
-    db_chess_player = models.Chess_player(**db_chess_player_data.model_dump())
-    db.add(db_chess_player)
-    db.commit()
-    db.refresh(db_chess_player)
-    return db_chess_player
+    try:
+        db_chess_player = models.Chess_player(**db_chess_player_data.model_dump())
+        db.add(db_chess_player)
+        db.commit()
+        db.refresh(db_chess_player)
+    except Exception as e:
+        raise ValueError(e)
 
 def read_chess_players(db: Session, select_columns: list, min_elo: int, max_elo: int, country: str, sort_by: str, asc: bool):
     corresponding_columns = {
@@ -49,9 +51,7 @@ def read_chess_players(db: Session, select_columns: list, min_elo: int, max_elo:
             raise ValueError(e)
         
     if select_columns:
-        results = db.execute(query).all()
-        keys = [col.name for col in select_columns]
-        return [schemas.Chess_Player_Response(**dict(zip(keys, row))) for row in results]
+        return db.execute(query).all()
         
     return db.execute(query).scalars().all()
 
@@ -68,7 +68,6 @@ def update_chess_player(db: Session, id: int, db_chess_player_data: schemas.Ches
 
     db.commit()
     db.refresh(db_chess_player)
-    return db_chess_player
 
 def delete_chess_player(db: Session, id: int):
     db_chess_player = db.query(models.Chess_player).filter(models.Chess_player.id == id).first()
@@ -85,11 +84,13 @@ def delete_chess_player(db: Session, id: int):
 # tournament--------------------------------------------------------------------
 
 def create_tournament(db: Session, db_tournament_data: schemas.Tournament_Create):
-    db_tournament = models.Tournament(**db_tournament_data.model_dump())
-    db.add(db_tournament)
-    db.commit()
-    db.refresh(db_tournament)
-    return db_tournament
+    try:
+        db_tournament = models.Tournament(**db_tournament_data.model_dump())
+        db.add(db_tournament)
+        db.commit()
+        db.refresh(db_tournament)
+    except Exception as e:
+        raise ValueError(e)
 
 def read_tournaments(db: Session, sort_by: str = None, asc: bool = True):
     query = select(models.Tournament)
@@ -122,7 +123,6 @@ def update_tournament(db: Session, id: int, db_tournament_data: schemas.Tourname
 
     db.commit()
     db.refresh(db_tournament)
-    return db_tournament
 
 def delete_tournament(db: Session, id: int):
     db_tournament = db.query(models.Tournament).filter(models.Tournament.id == id).first()
@@ -139,11 +139,13 @@ def delete_tournament(db: Session, id: int):
 # partitipation--------------------------------------------------------------------
 
 def create_partitipation(db: Session, db_partitipation_data: schemas.Partitipation_Create):
-    db_partitipation = models.Tournament(**db_partitipation_data.model_dump())
-    db.add(db_partitipation)
-    db.commit()
-    db.refresh(db_partitipation)
-    return db_partitipation
+    try:
+        db_partitipation = models.Partitipation(**db_partitipation_data.model_dump())
+        db.add(db_partitipation)
+        db.commit()
+        db.refresh(db_partitipation)
+    except Exception as e:
+        raise ValueError(e)
 
 def read_partitipations(db: Session, sort_by: str = None, asc: bool = True):
     query = select(models.Partitipation)
@@ -174,7 +176,6 @@ def update_partitipation(db: Session, id: int, db_partitipation_data: schemas.Pa
 
     db.commit()
     db.refresh(db_partitipation)
-    return db_partitipation
 
 def update_place(db: Session, initials: str, tournament: str, place:int):
     player_subquery = db.query(models.Chess_player.id).filter(models.Chess_player.initials == initials).subquery()
@@ -213,9 +214,7 @@ def read_partitipation_results(db: Session, sort_by: str = None, asc: bool = Tru
         models.Chess_player, models.Partitipation.chess_player_id == models.Chess_player.id
     ).join(
         models.Tournament, models.Partitipation.tournament_id == models.Tournament.id
-    ).order_by(
-        models.Chess_player.initials
-    ).all()
+    )
 
     if sort_by:
         try:
@@ -226,8 +225,12 @@ def read_partitipation_results(db: Session, sort_by: str = None, asc: bool = Tru
             })
         except ValueError as e:
             raise ValueError(e)
+    else:
+        query = query.order_by(models.Chess_player.initials)
 
-    return db.execute(query).scalars().all()
+    query = db.execute(query).all()
+
+    return query
 
 def read_winners(db: Session, sort_by: str = None, asc: bool = True):
     query = select(
@@ -240,7 +243,7 @@ def read_winners(db: Session, sort_by: str = None, asc: bool = True):
     ).having(
         models.Partitipation.place <= 3,
         models.Partitipation.place > 0
-    ).all()
+    )
 
     if sort_by:
         try:
@@ -251,4 +254,4 @@ def read_winners(db: Session, sort_by: str = None, asc: bool = True):
         except ValueError as e:
             raise ValueError(e)
         
-    return db.execute(query).scalars().all()
+    return db.execute(query).all()

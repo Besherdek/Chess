@@ -13,9 +13,13 @@ def root():
 
 # player--------------------------------------------------------------------
 
-@app.post("/chess_players/", response_model=schemas.Chess_Player_Create)
+@app.post("/chess_players/")
 def create_chess_player(chess_player: schemas.Chess_Player_Create, db: Session = Depends(get_db)):
-    return crud.create_chess_player(db, chess_player)
+    try:
+        crud.create_chess_player(db, chess_player)
+        return "Player created successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error creating player: {e}")
 
 @app.get("/chess_players/", response_model=list[schemas.Chess_Player_Response])
 def read_chess_players(
@@ -29,27 +33,32 @@ def read_chess_players(
     ):
     return crud.read_chess_players(db, select_columns, min_elo, max_elo, country, sort_by, asc)
 
-@app.put("/chess_players/{id}", response_model=schemas.Chess_Player_Response)
+@app.put("/chess_players/{id}")
 def update_chess_player(id: int, chess_player: schemas.Chess_Player_Update, db: Session = Depends(get_db)):
-    updated_chess_player = crud.update_chess_player(db, id, chess_player)
+    try:
+        crud.update_chess_player(db, id, chess_player)
+        return "Player updated successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error updating player: {e}")
 
-    if not updated_chess_player:
-        raise HTTPException(404, "Error: chess player with such id not found")
-    return updated_chess_player
-
-@app.delete("/chess_players/{id}", response_model=dict)
+@app.delete("/chess_players/{id}")
 def delete_chess_player(id: int, db: Session = Depends(get_db)):
-    success = crud.delete_chess_player(db, id)
-    if not success:
-        raise HTTPException(404, "Error: chess player with such id not found")
-    return {"Detail": "Chess player deleted successfully"}
+    try:
+        crud.delete_chess_player(db, id)
+        return "Player deleted successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error deleting player: {e}")
 
 
 # tournament--------------------------------------------------------------------
 
-@app.post("/tournaments/", response_model=schemas.Tournament_Create)
+@app.post("/tournaments/")
 def create_tournament(tournament: schemas.Tournament_Create, db: Session = Depends(get_db)):
-    return crud.create_tournament(db, tournament)
+    try:
+        crud.create_tournament(db, tournament)
+        return "Tournament created successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error creating tournament: {e}")
 
 @app.get("/tournaments/", response_model=list[schemas.Tournament_Response])
 def read_tournaments(
@@ -59,27 +68,32 @@ def read_tournaments(
     ):
     return crud.read_tournaments(db, sort_by, asc)
 
-@app.put("/tournaments/{id}", response_model=schemas.Tournament_Response)
+@app.put("/tournaments/{id}")
 def update_tournament(id: int, tournament: schemas.Tournament_Update, db: Session = Depends(get_db)):
-    updated_tournament = crud.update_tournament(db, id, tournament)
+    try:
+        crud.update_tournament(db, id, tournament)
+        return "Tournament updated successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error updating tournament: {e}")
 
-    if not updated_tournament:
-        raise HTTPException(404, "Error: tournament with such id not found")
-    return updated_tournament
-
-@app.delete("/tournaments/{id}", response_model=dict)
+@app.delete("/tournaments/{id}")
 def delete_tournament(id: int, db: Session = Depends(get_db)):
-    success = crud.delete_tournament(db, id)
-    if not success:
-        raise HTTPException(404, "Error: tournament with such id not found")
-    return {"Detail": "Tournament deleted successfully"}
+    try:
+        crud.delete_tournament(db, id)
+        return "Tournament deleted successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error deleting tournament: {e}")
 
 
 # partitipation--------------------------------------------------------------------
 
-@app.post("/partitipations/", response_model=schemas.Partitipation_Create)
+@app.post("/partitipations/")
 def create_partitipation(partitipation: schemas.Partitipation_Create, db: Session = Depends(get_db)):
-    return crud.create_partitipation(db, partitipation)
+    try:
+        crud.create_partitipation(db, partitipation)
+        return "Partitipation created successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error creating partitipation: {e}")
 
 @app.get("/partitipations/", response_model=list[schemas.Partitipation_Response])
 def read_partitipations(
@@ -89,20 +103,21 @@ def read_partitipations(
     ):
     return crud.read_partitipations(db, sort_by, asc)
 
-@app.put("/partitipations/{id}", response_model=schemas.Partitipation_Response)
+@app.put("/partitipations/{id}")
 def update_partitipation(id: int, partitipation: schemas.Partitipation_Update, db: Session = Depends(get_db)):
-    updated_partitipation = crud.update_partitipation(db, id, partitipation)
+    try:
+        crud.update_partitipation(db, id, partitipation)
+        return "Partitipation updated successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error updating partitipation: {e}")
 
-    if not updated_partitipation:
-        raise HTTPException(404, "Error: partitipation with such id not found")
-    return updated_partitipation
-
-@app.delete("/partitipations/{id}", response_model=dict)
+@app.delete("/partitipations/{id}")
 def delete_partitipation(id: int, db: Session = Depends(get_db)):
-    success = crud.delete_partitipation(db, id)
-    if not success:
-        raise HTTPException(404, "Error: partitipation with such id not found")
-    return {"Detail": "Partitipation deleted successfully"}
+    try:
+        crud.delete_partitipation(db, id)
+        return "Partitipation deleted successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error deleting partitipation: {e}")
 
 @app.get("/partitipation_results/", response_model=list[schemas.Results_response])
 def read_partitipaiton_results(
@@ -114,7 +129,11 @@ def read_partitipaiton_results(
 
 @app.put("/update_place/")
 def update_place(initials: str, tournament: str, place:int, db: Session = Depends(get_db)):
-    crud.update_place(db, initials, tournament, place)
+    try:
+        crud.update_place(db, initials, tournament, place)
+        return "Place updated successfully"
+    except Exception as e:
+        raise HTTPException(400, f"Error updating place: {e}")
 
 @app.get("/get_winners/", response_model=list[schemas.Winners_response])
 def get_winners(
