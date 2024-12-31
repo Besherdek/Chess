@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSONB
 
 Base = declarative_base()
 
@@ -12,6 +13,7 @@ class Chess_player(Base):
     country = Column(String)
     elo = Column(Integer, nullable=False)
     title = Column(String)
+    pets = Column(JSONB, nullable=True)
     partitipation = relationship("Partitipation", back_populates="chess_player")
 
 class Tournament(Base):

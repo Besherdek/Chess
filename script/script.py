@@ -5,6 +5,8 @@ tournaments_url = 'http://127.0.0.1:8080/tournaments/'
 partitications_url = 'http://127.0.0.1:8080/partitipations/'
 
 chess_players = [
+    {"initials": "Rafael Savoyan", "country": "Georgia", "elo": 1000, "title": None},
+    {"initials": "John Doe", "country": "US", "elo": 1200, "title": "Just a player"},
     {"initials": "Magnus Carlsen", "country": "Norway", "elo": 2831, "title": "GM"},
     {"initials": "Fabiano Caruana", "country": "US", "elo": 2805, "title": "GM"},
     {"initials": "Hikaru Nakamura", "country": "US", "elo": 2808, "title": "GM"},
@@ -99,6 +101,35 @@ partitipations = [
     {"chess_player_id": 10, "tournament_id": 2, "partition_number": 47, "place": 1}
 ]
 
+pets = [
+    {"Dog name": "Bim", "Cat name": None},
+    {"Dog name": None, "Cat name": "Eifer tower"},
+    {"Dog name": "Goldie", "Cat name": "Bronzie"},
+    {"Dog name": "Archie", "Cat name": None},
+    {"Dog name": "Archie", "Cat name": "Peach"},
+    {"Dog name": "Rex", "Cat name": None},
+    {"Dog name": "Honey", "Cat name": "Bun"},
+    {"Dog name": "Bob", "Cat name": "Lavander"},
+    {"Dog name": "Ralf", "Cat name": "Garry"},
+    {"Dog name": None, "Cat name": None},
+    {"Dog name": None, "Cat name": "Chelsea"},
+    {"Dog name": "Willow", "Cat name": "Pillow"},
+    {"Dog name": "Snow", "Cat name": "White"},
+    {"Dog name": "Butterball", "Cat name": "Ritchie"},
+    {"Dog name": "Brownie", "Cat name": None},
+    {"Dog name": "Rex", "Cat name": "Luna"},
+    {"Dog name": "Lord", "Cat name": "Lady"},
+    {"Dog name": "Bing chilling", "Cat name": "Min min"},
+    {"Dog name": None, "Cat name": "Meow meow"},
+    {"Dog name": "Mastermind", "Cat name": None},
+    {"Dog name": "Cupcake", "Cat name": "Muffin"},
+    {"Dog name": None, "Cat name": None},
+    {"Dog name": "Mot", "Cat name": "Tom"},
+    {"Dog name": "Richard", "Cat name": "Nicole"},
+    {"Dog name": "Graph", "Cat name": "Murzik"},
+    {"Dog name": "Ritchie", "Cat name": None}
+]
+
 def add_chess_player(player):
     try:
         response = requests.post(players_url, json=player)
@@ -123,11 +154,22 @@ def add_partitipation(partitipation):
     except requests.exceptions.RequestException as e:
         print(f"Error adding partitipation: {e}")
 
+def add_pet(pet, id):
+    try:    
+        response = requests.put(f"{players_url}{id}", json={"pet": pet})
+        response.raise_for_status()
+        print("Added successfully")
+    except requests.exceptions.RequestException as e:
+        print(f"Error adding data: {e}")
+
 # for player in chess_players:
 #     add_chess_player(player)
 
 # for tournament in tournaments:
 #     add_tournament(tournament)
 
-for partitipation in partitipations:
-    add_partitipation(partitipation)
+# for partitipation in partitipations:
+#     add_partitipation(partitipation)
+
+for i in range(1, len(pets) + 1):
+    add_pet(pets[i - 1], i)

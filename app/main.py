@@ -29,9 +29,11 @@ def read_chess_players(
     country: str = None,
     sort_by: str = None,
     asc: bool = True,
+    page: int = Query(1),
+    limit: int = Query(5),
     db: Session = Depends(get_db)
     ):
-    return crud.read_chess_players(db, select_columns, min_elo, max_elo, country, sort_by, asc)
+    return crud.read_chess_players(db, select_columns, min_elo, max_elo, country, sort_by, asc, limit, offset=(page-1)*limit)
 
 @app.put("/chess_players/{id}")
 def update_chess_player(id: int, chess_player: schemas.Chess_Player_Update, db: Session = Depends(get_db)):
@@ -49,6 +51,9 @@ def delete_chess_player(id: int, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(400, f"Error deleting player: {e}")
 
+@app.get("/search_pets/", response_model=list[schemas.Chess_Player_Response])
+def search_pets(pet_name: str, page: int = Query(1), limit: int = Query(5), db: Session = Depends(get_db)):
+    return crud.search_pets(db, pet_name, limit, offset=(page-1)*limit)
 
 # tournament--------------------------------------------------------------------
 
@@ -64,9 +69,11 @@ def create_tournament(tournament: schemas.Tournament_Create, db: Session = Depen
 def read_tournaments(
     sort_by: str = None,
     asc: bool = True,
+    page: int = Query(1),
+    limit: int = Query(5),
     db: Session = Depends(get_db)
     ):
-    return crud.read_tournaments(db, sort_by, asc)
+    return crud.read_tournaments(db, sort_by, asc, limit, offset=(page-1)*limit)
 
 @app.put("/tournaments/{id}")
 def update_tournament(id: int, tournament: schemas.Tournament_Update, db: Session = Depends(get_db)):
@@ -99,9 +106,11 @@ def create_partitipation(partitipation: schemas.Partitipation_Create, db: Sessio
 def read_partitipations(
     sort_by: str = None,
     asc: bool = True,
+    page: int = Query(1),
+    limit: int = Query(5),
     db: Session = Depends(get_db)
     ):
-    return crud.read_partitipations(db, sort_by, asc)
+    return crud.read_partitipations(db, sort_by, asc, limit, offset=(page-1)*limit)
 
 @app.put("/partitipations/{id}")
 def update_partitipation(id: int, partitipation: schemas.Partitipation_Update, db: Session = Depends(get_db)):
@@ -123,9 +132,11 @@ def delete_partitipation(id: int, db: Session = Depends(get_db)):
 def read_partitipaiton_results(
     sort_by: str = None,
     asc: bool = True,
+    page: int = Query(1),
+    limit: int = Query(5),
     db: Session = Depends(get_db)
     ):
-    return crud.read_partitipation_results(db, sort_by, asc)
+    return crud.read_partitipation_results(db, sort_by, asc, limit, offset=(page-1)*limit)
 
 @app.put("/update_place/")
 def update_place(initials: str, tournament: str, place:int, db: Session = Depends(get_db)):
@@ -139,9 +150,11 @@ def update_place(initials: str, tournament: str, place:int, db: Session = Depend
 def get_winners(
     sort_by: str = None,
     asc: bool = True,
+    page: int = Query(1),
+    limit: int = Query(5),
     db: Session = Depends(get_db)
     ):
-    return crud.read_winners(db, sort_by, asc)
+    return crud.read_winners(db, sort_by, asc, limit, offset=(page-1)*limit)
 
 if __name__ == "__main__":
     import uvicorn

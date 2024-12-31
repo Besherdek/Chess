@@ -1,12 +1,14 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import date
+from sqlalchemy.dialects.postgresql import JSONB
 
 class Chess_Player_Create(BaseModel):
     initials: str
     country: Optional[str] = None
     elo: int
     title: Optional[str] = None
+    pets: Optional[dict] = None
 
 class Chess_Player_Response(BaseModel):
     id: Optional[int] = None
@@ -14,6 +16,7 @@ class Chess_Player_Response(BaseModel):
     country: Optional[str] = None
     elo: Optional[int] = None
     title: Optional[str] = None
+    pets: Optional[dict] = None
 
     class Config:
         orm_mode = True
@@ -23,6 +26,7 @@ class Chess_Player_Update(BaseModel):
     country: Optional[str] = None
     elo: Optional[int] = None
     title: Optional[str] = None
+    pets: Optional[dict] = None
 
 
 class Tournament_Create(BaseModel):

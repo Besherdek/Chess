@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, text
 import models, schemas
-from datetime import date
 
 def apply_sort(query, sort_by: str, asc: bool, valid_columns: dict):
     if sort_by not in valid_columns:
@@ -21,19 +20,20 @@ def create_chess_player(db: Session, db_chess_player_data: schemas.Chess_Player_
     except Exception as e:
         raise ValueError(e)
 
-def read_chess_players(db: Session, select_columns: list, min_elo: int, max_elo: int, country: str, sort_by: str, asc: bool):
+def read_chess_players(db: Session, select_columns: list, min_elo: int, max_elo: int, country: str, sort_by: str, asc: bool, limit: int, offset: int):
     corresponding_columns = {
         "id": models.Chess_player.id,
         "initials": models.Chess_player.initials,
         "country": models.Chess_player.country,
         "elo": models.Chess_player.elo,
-        "title": models.Chess_player.title
+        "title": models.Chess_player.title,
+        "pets": models.Chess_player.pets
     }
 
-    if select_columns:    
+    if select_columns:
         select_columns = [corresponding_columns[col] for col in select_columns]
 
-    query = select(*select_columns) if select_columns else select(models.Chess_player)
+    query = select(*select_columns).limit(limit).offset(offset) if select_columns else select(models.Chess_player).limit(limit).offset(offset)
 
     if min_elo:
         query = query.where(models.Chess_player.elo >= min_elo)
@@ -80,6 +80,16 @@ def delete_chess_player(db: Session, id: int):
 
     return True
 
+def search_pets(db: Session, pet_name: str, limit: int, offset: int):
+    sql = text("""
+        SELECT * 
+        FROM chess_players
+        WHERE pets::text ILIKE :pattern
+        LIMIT :limit
+        OFFSET :offset
+    """)
+    return db.execute(sql, {"pattern": f"%{pet_name}%", "limit": limit, "offset": offset}).all()
+
 
 # tournament--------------------------------------------------------------------
 
@@ -92,7 +102,7 @@ def create_tournament(db: Session, db_tournament_data: schemas.Tournament_Create
     except Exception as e:
         raise ValueError(e)
 
-def read_tournaments(db: Session, sort_by: str = None, asc: bool = True):
+def read_tournaments(db: Session, sort_by: str, asc: bool, limit: int, offset: int):
     query = select(models.Tournament)
     
     if sort_by:
@@ -108,7 +118,7 @@ def read_tournaments(db: Session, sort_by: str = None, asc: bool = True):
         except ValueError as e:
             raise ValueError(e)
         
-    return db.execute(query).scalars().all()
+    return db.execute(query).limit(limit).offset(offset).scalars().all()
 
 def update_tournament(db: Session, id: int, db_tournament_data: schemas.Tournament_Update):
     db_tournament = db.query(models.Tournament).filter(models.Tournament.id == id).first()
@@ -147,7 +157,7 @@ def create_partitipation(db: Session, db_partitipation_data: schemas.Partitipati
     except Exception as e:
         raise ValueError(e)
 
-def read_partitipations(db: Session, sort_by: str = None, asc: bool = True):
+def read_partitipations(db: Session, sort_by: str, asc: bool, limit: int, offset: int):
     query = select(models.Partitipation)
     
     if sort_by:
@@ -161,7 +171,7 @@ def read_partitipations(db: Session, sort_by: str = None, asc: bool = True):
         except ValueError as e:
             raise ValueError(e)
         
-    return db.execute(query).scalars().all()
+    return db.execute(query).limit(limit).offset(offset).scalars().all()
 
 def update_partitipation(db: Session, id: int, db_partitipation_data: schemas.Partitipation_Update):
     db_partitipation = db.query(models.Partitipation).filter(models.Partitipation.id == id).first()
@@ -205,7 +215,7 @@ def delete_partitipation(db: Session, id: int):
 
     return True
 
-def read_partitipation_results(db: Session, sort_by: str = None, asc: bool = True):
+def read_partitipation_results(db: Session, sort_by: str, asc: bool, limit: int, offset: int):
     query = select(
         models.Chess_player.initials,
         models.Partitipation.place,
@@ -228,11 +238,11 @@ def read_partitipation_results(db: Session, sort_by: str = None, asc: bool = Tru
     else:
         query = query.order_by(models.Chess_player.initials)
 
-    query = db.execute(query).all()
+    query = db.execute(query).limit(limit).offset(offset).all()
 
     return query
 
-def read_winners(db: Session, sort_by: str = None, asc: bool = True):
+def read_winners(db: Session, sort_by: str, asc: bool, limit: int, offset: int):
     query = select(
         models.Chess_player.initials,
         models.Partitipation.place
@@ -254,4 +264,4 @@ def read_winners(db: Session, sort_by: str = None, asc: bool = True):
         except ValueError as e:
             raise ValueError(e)
         
-    return db.execute(query).all()
+    return db.execute(query).limit(limit).offset(offset).all()

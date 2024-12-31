@@ -19,10 +19,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.create_unique_constraint('unique_title', 'tournaments', ['title'])
-    op.create_index('in_tournaments_title', 'tournaments', ['title'], unique=True, if_not_exists=True)
+    op.create_index('in_tournaments_title', 'tournaments', ['title'],  if_not_exists=True)
 
 
 def downgrade() -> None:
     op.drop_index('in_tournaments_title', 'tournaments')
-    op.drop_constraint('unique_title', 'tournaments')
